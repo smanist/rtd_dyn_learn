@@ -1,3 +1,4 @@
+import re
 from html import escape
 import re
 
@@ -81,6 +82,13 @@ def _doc_title(env, docname, explicit_title=None):
     if title_node is not None:
         return title_node.astext()
     return docname.rsplit("/", 1)[-1].replace("_", " ").title()
+
+
+def _chapter_number(docname):
+    match = re.match(r"^chapters/(\d{2})_", docname)
+    if match is None:
+        return None
+    return int(match.group(1))
 
 
 def _toctree_entries(env, docname):

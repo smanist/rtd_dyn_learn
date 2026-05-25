@@ -1,3 +1,4 @@
+import re
 from html import escape
 
 from docutils import nodes
@@ -82,6 +83,13 @@ def _doc_title(env, docname, explicit_title=None):
     return docname.rsplit("/", 1)[-1].replace("_", " ").title()
 
 
+def _chapter_number(docname):
+    match = re.match(r"^chapters/(\d{2})_", docname)
+    if match is None:
+        return None
+    return int(match.group(1))
+
+
 def _toctree_entries(env, docname):
     doctree = env.get_doctree(docname)
     for node in doctree.findall(addnodes.toctree):
@@ -128,9 +136,9 @@ def add_course_sidebar_context(app, pagename, templatename, context, doctree):
 
     sidebar_items = []
     group_children = list(_toctree_entries(app.env, group_index)) if group_index else []
-    for number, item in enumerate(_toctree_entries(app.env, app.config.master_doc), 1):
+    for item in _toctree_entries(app.env, app.config.master_doc):
         item = dict(item)
-        item["number"] = number
+        item["chapter_number"] = _chapter_number(item["docname"])
         item["current"] = pagename == item["docname"] or group_index == item["docname"]
         item["children"] = group_children if group_index == item["docname"] else []
         sidebar_items.append(item)

@@ -28,7 +28,7 @@ issue_selection:
   allow_stacked_prs: false
   max_stack_depth: 3
   max_issues_per_run: 1
-  max_parent_children_per_run: 3
+  max_parent_children_per_run: 1
   selection_order: oldest_updated
 git:
   branch_prefix: ai/issue-
@@ -47,7 +47,7 @@ agent:
 review:
   enabled: true
   command: codex exec --sandbox read-only
-  max_iterations: 3
+  max_iterations: 2
   fix_priorities:
   - P0
   - P1

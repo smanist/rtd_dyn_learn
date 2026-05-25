@@ -94,11 +94,9 @@ def _toctree_entries(env, docname):
                 }
 
 
-def _sidebar_number(docname, fallback_number):
-    match = re.search(r"/(\d{2})_", docname)
-    if match:
-        return match.group(1)
-    return str(fallback_number)
+def _doc_nav_number(docname):
+    match = re.match(r"^chapters/(\d{2})_", docname)
+    return match.group(1) if match else None
 
 
 class CourseInteractiveDirective(Directive):
@@ -136,9 +134,9 @@ def add_course_sidebar_context(app, pagename, templatename, context, doctree):
 
     sidebar_items = []
     group_children = list(_toctree_entries(app.env, group_index)) if group_index else []
-    for number, item in enumerate(_toctree_entries(app.env, app.config.master_doc), 1):
+    for item in _toctree_entries(app.env, app.config.master_doc):
         item = dict(item)
-        item["number"] = _sidebar_number(item["docname"], number)
+        item["number"] = _doc_nav_number(item["docname"])
         item["current"] = pagename == item["docname"] or group_index == item["docname"]
         item["children"] = group_children if group_index == item["docname"] else []
         sidebar_items.append(item)

@@ -8,6 +8,7 @@ Markdown, Sphinx cross-references, figures, and LaTeX equations.
 :caption: Contents
 
 chapters/01_problem_formulation_what_does_it_mean_to_learn_dynamics
+chapters/02_data_noise_preprocessing_and_validation_metrics
 chapters/getting-started
 chapters/interactive-example
 ```

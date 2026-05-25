@@ -1,4 +1,5 @@
 from html import escape
+import re
 
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
@@ -93,6 +94,13 @@ def _toctree_entries(env, docname):
                 }
 
 
+def _sidebar_number(docname, fallback_number):
+    match = re.search(r"/(\d{2})_", docname)
+    if match:
+        return match.group(1)
+    return str(fallback_number)
+
+
 class CourseInteractiveDirective(Directive):
     has_content = True
     option_spec = {
@@ -130,7 +138,7 @@ def add_course_sidebar_context(app, pagename, templatename, context, doctree):
     group_children = list(_toctree_entries(app.env, group_index)) if group_index else []
     for number, item in enumerate(_toctree_entries(app.env, app.config.master_doc), 1):
         item = dict(item)
-        item["number"] = number
+        item["number"] = _sidebar_number(item["docname"], number)
         item["current"] = pagename == item["docname"] or group_index == item["docname"]
         item["children"] = group_children if group_index == item["docname"] else []
         sidebar_items.append(item)

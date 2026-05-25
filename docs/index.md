@@ -11,6 +11,7 @@ chapters/01_problem_formulation_what_does_it_mean_to_learn_dynamics
 chapters/02_data_noise_preprocessing_and_validation_metrics
 chapters/03_linear_full_state_dynamics_identification
 chapters/04_input_output_and_subspace_identification
+chapters/22_reduced_order_dynamics_and_closure
 chapters/getting-started
 chapters/interactive-example
 ```

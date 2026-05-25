@@ -23,6 +23,7 @@ chapters/14_nonlinear_and_ensemble_state_estimation
 chapters/15_joint_state_parameter_estimation_and_em_type_learning
 chapters/16_learning_dynamics_as_trajectory_optimization_and_data_assimilation
 chapters/17_state_reconstruction_from_partial_observations
+chapters/18_learning_dynamics_as_optimal_control
 chapters/getting-started
 chapters/interactive-example
 ```

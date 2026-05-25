@@ -8,6 +8,7 @@ Markdown, Sphinx cross-references, figures, and LaTeX equations.
 :caption: Contents
 
 chapters/01_problem_formulation_what_does_it_mean_to_learn_dynamics
+chapters/15_joint_state_parameter_estimation_and_em_type_learning
 chapters/getting-started
 chapters/interactive-example
 ```

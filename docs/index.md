@@ -8,6 +8,7 @@ Markdown, Sphinx cross-references, figures, and LaTeX equations.
 :caption: Contents
 
 chapters/01_problem_formulation_what_does_it_mean_to_learn_dynamics
+chapters/08_gray_box_residual_and_closure_learning
 chapters/getting-started
 chapters/interactive-example
 ```

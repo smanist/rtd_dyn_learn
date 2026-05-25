@@ -2,7 +2,7 @@
 <ul>
   {% for item in course_sidebar_items %}
     <li class="toctree-l1{% if item.current %} current{% endif %}">
-      <a class="{% if pagename == item.docname %}current {% endif %}reference internal" href="{{ pathto(item.docname) }}">{% if item.number %}{{ item.number }}. {% endif %}{{ item.title }}</a>
+      <a class="{% if pagename == item.docname %}current {% endif %}reference internal" href="{{ pathto(item.docname) }}">{{ item.nav_title }}</a>
       {% if item.children %}
         <ul class="current">
           {% for child in item.children %}

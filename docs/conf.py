@@ -1,4 +1,3 @@
-import re
 from html import escape
 import re
 
@@ -102,9 +101,12 @@ def _toctree_entries(env, docname):
                 }
 
 
-def _doc_nav_number(docname):
-    match = re.match(r"^chapters/(\d{2})_", docname)
-    return match.group(1) if match else None
+def _chapter_number(docname):
+    basename = docname.rsplit("/", 1)[-1]
+    match = re.match(r"(\d+)_", basename)
+    if match is None:
+        return None
+    return str(int(match.group(1)))
 
 
 class CourseInteractiveDirective(Directive):
@@ -144,7 +146,10 @@ def add_course_sidebar_context(app, pagename, templatename, context, doctree):
     group_children = list(_toctree_entries(app.env, group_index)) if group_index else []
     for item in _toctree_entries(app.env, app.config.master_doc):
         item = dict(item)
-        item["number"] = _doc_nav_number(item["docname"])
+        item["number"] = _chapter_number(item["docname"])
+        item["nav_title"] = (
+            f"{item['number']}. {item['title']}" if item["number"] else item["title"]
+        )
         item["current"] = pagename == item["docname"] or group_index == item["docname"]
         item["children"] = group_children if group_index == item["docname"] else []
         sidebar_items.append(item)

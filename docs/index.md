@@ -26,6 +26,7 @@ chapters/17_state_reconstruction_from_partial_observations
 chapters/18_learning_dynamics_as_optimal_control
 chapters/19_identification_for_control_and_closed_loop_learning
 chapters/20_stochastic_dynamics_and_probabilistic_learning
+chapters/21_constraints_geometry_and_invariance_in_learned_dynamics
 chapters/getting-started
 chapters/interactive-example
 ```

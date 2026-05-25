@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'USAGE'
+Usage: scripts/prepare-template-sync [options]
+
+Prepare a full template-sync candidate from rtd_skeleton without applying it.
+The script fetches the template ref, writes review artifacts under
+.git/template-sync/<timestamp>/, and prints a git restore -p command so a human
+can select hunks.
+
+Options:
+  --template-repo <path-or-url>  Template repository to fetch.
+                                Default: ../rtd_skeleton
+  --ref <ref>                   Template ref to fetch. Default: main
+  --select                      Start interactive git hunk selection now.
+  --include-syllabus            Include syllabus/ in the candidate diff.
+  --scaffold-only               Exclude docs/chapters/ from the candidate diff.
+  -h, --help                    Show this help.
+
+Environment:
+  TEMPLATE_REPO                 Default template repository override.
+  TEMPLATE_REF                  Default template ref override.
+USAGE
+}
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+cd "$repo_root"
+
+template_repo="${TEMPLATE_REPO:-../rtd_skeleton}"
+template_ref="${TEMPLATE_REF:-main}"
+select_hunks=0
+include_syllabus=0
+scaffold_only=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --template-repo)
+      if [[ $# -lt 2 ]]; then
+        echo "error: --template-repo requires a value" >&2
+        exit 2
+      fi
+      template_repo="$2"
+      shift 2
+      ;;
+    --ref)
+      if [[ $# -lt 2 ]]; then
+        echo "error: --ref requires a value" >&2
+        exit 2
+      fi
+      template_ref="$2"
+      shift 2
+      ;;
+    --select)
+      select_hunks=1
+      shift
+      ;;
+    --include-syllabus)
+      include_syllabus=1
+      shift
+      ;;
+    --scaffold-only)
+      scaffold_only=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "error: unknown option: $1" >&2
+      usage
+      exit 2
+      ;;
+  esac
+done
+
+if [[ ! -d .git ]]; then
+  echo "error: run this script from inside a target course git worktree" >&2
+  exit 1
+fi
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "error: working tree has uncommitted tracked changes" >&2
+  echo "Commit, stash, or discard them before preparing a template sync." >&2
+  exit 1
+fi
+
+echo "Fetching ${template_ref} from ${template_repo}..."
+git fetch --no-tags "$template_repo" "$template_ref" >/dev/null
+template_commit="$(git rev-parse FETCH_HEAD)"
+
+pathspecs=(".")
+if [[ "$include_syllabus" -eq 0 ]]; then
+  pathspecs+=(":(exclude)syllabus/**")
+fi
+if [[ "$scaffold_only" -eq 1 ]]; then
+  pathspecs+=(":(exclude)docs/chapters/**")
+fi
+
+artifact_root="$repo_root/.git/template-sync"
+timestamp="$(date +%Y%m%d-%H%M%S)"
+artifact_dir="$artifact_root/$timestamp"
+mkdir -p "$artifact_dir"
+
+git diff --stat HEAD "$template_commit" -- "${pathspecs[@]}" >"$artifact_dir/stat.txt"
+git diff --name-status HEAD "$template_commit" -- "${pathspecs[@]}" >"$artifact_dir/files.txt"
+git diff --binary --find-renames HEAD "$template_commit" -- "${pathspecs[@]}" >"$artifact_dir/candidate.patch"
+
+{
+  echo "#!/usr/bin/env bash"
+  echo "set -euo pipefail"
+  printf "cd %q\n" "$repo_root"
+  printf "git restore -p --source=%q --" "$template_commit"
+  for pathspec in "${pathspecs[@]}"; do
+    printf " %q" "$pathspec"
+  done
+  echo
+} >"$artifact_dir/select-hunks.sh"
+chmod +x "$artifact_dir/select-hunks.sh"
+
+echo
+echo "Template commit: $template_commit"
+echo "Artifacts:"
+echo "  $artifact_dir/stat.txt"
+echo "  $artifact_dir/files.txt"
+echo "  $artifact_dir/candidate.patch"
+echo "  $artifact_dir/select-hunks.sh"
+echo
+echo "Changed paths:"
+sed -n '1,80p' "$artifact_dir/files.txt"
+if [[ "$(wc -l <"$artifact_dir/files.txt" | tr -d ' ')" -gt 80 ]]; then
+  echo "  ... see $artifact_dir/files.txt for the full list"
+fi
+echo
+echo "Review with:"
+printf "  git diff HEAD %q --" "$template_commit"
+for pathspec in "${pathspecs[@]}"; do
+  printf " %q" "$pathspec"
+done
+echo
+echo
+echo "Select hunks with:"
+echo "  $artifact_dir/select-hunks.sh"
+
+if [[ "$select_hunks" -eq 1 ]]; then
+  echo
+  echo "Starting interactive hunk selection..."
+  "$artifact_dir/select-hunks.sh"
+fi

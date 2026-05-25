@@ -9,6 +9,7 @@ Markdown, Sphinx cross-references, figures, and LaTeX equations.
 
 chapters/01_problem_formulation_what_does_it_mean_to_learn_dynamics
 chapters/02_data_noise_preprocessing_and_validation_metrics
+chapters/21_constraints_geometry_and_invariance_in_learned_dynamics
 chapters/getting-started
 chapters/interactive-example
 ```

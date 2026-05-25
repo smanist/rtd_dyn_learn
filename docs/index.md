@@ -18,6 +18,7 @@ chapters/08_gray_box_residual_and_closure_learning
 chapters/09_incomplete_state_models_and_non_markovian_closure
 chapters/10_black_box_nonlinear_dynamics_models
 chapters/11_controlled_and_parametric_nonlinear_systems
+chapters/12_learning_dynamics_as_state_estimation
 chapters/getting-started
 chapters/interactive-example
 ```

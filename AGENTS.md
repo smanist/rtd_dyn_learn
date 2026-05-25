@@ -13,6 +13,12 @@ This repository is a static Sphinx/MyST site for interactive course notes.
 - Keep Sphinx configuration in `docs/conf.py`.
 - Keep shared styling in `docs/_static/css/`.
 - Keep browser-side interactive code in `docs/_static/js/`.
+- When editing existing chapter content, do not change site architecture files
+  such as `docs/conf.py`, built HTML files, templates, shared static assets, or
+  navigation files unless the user explicitly asks for those changes.
+- For a single-file chapter, or for the top-level file in a grouped chapter,
+  name the final content-summary section `Summary`. Do not use alternate names
+  such as `Takeaways`, `Key Takeaways`, or `Conclusion` for that section.
 
 ## Syllabus and Notation Policy
 

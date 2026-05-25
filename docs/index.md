@@ -16,6 +16,7 @@ chapters/06_linear_in_parameter_nonlinear_dynamics_and_sparse_discovery
 chapters/07_known_parametric_models_and_inverse_problems
 chapters/08_gray_box_residual_and_closure_learning
 chapters/09_incomplete_state_models_and_non_markovian_closure
+chapters/10_black_box_nonlinear_dynamics_models
 chapters/getting-started
 chapters/interactive-example
 ```

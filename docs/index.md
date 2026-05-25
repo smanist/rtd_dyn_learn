@@ -20,6 +20,7 @@ chapters/10_black_box_nonlinear_dynamics_models
 chapters/11_controlled_and_parametric_nonlinear_systems
 chapters/12_learning_dynamics_as_state_estimation
 chapters/14_nonlinear_and_ensemble_state_estimation
+chapters/15_joint_state_parameter_estimation_and_em_type_learning
 chapters/getting-started
 chapters/interactive-example
 ```

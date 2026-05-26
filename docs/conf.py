@@ -131,6 +131,36 @@ class CourseInteractiveDirective(Directive):
         ]
 
 
+class FoldBoxDirective(Directive):
+    has_content = True
+    optional_arguments = 1
+    final_argument_whitespace = True
+    option_spec = {
+        "open": directives.flag,
+    }
+
+    def run(self):
+        self.assert_has_content()
+        content = nodes.container()
+        self.state.nested_parse(self.content, self.content_offset, content)
+        title = escape(self.arguments[0] if self.arguments else "Details", quote=True)
+        open_attr = " open" if "open" in self.options else ""
+
+        return [
+            nodes.raw(
+                "",
+                (
+                    f'<details class="foldbox"{open_attr}>'
+                    f'<summary class="foldbox__summary">{title}</summary>'
+                    '<div class="foldbox__content">'
+                ),
+                format="html",
+            ),
+            *content.children,
+            nodes.raw("", "</div></details>", format="html"),
+        ]
+
+
 def add_course_sidebar_context(app, pagename, templatename, context, doctree):
     parts = pagename.split("/")
     group_index = None
@@ -159,4 +189,5 @@ def add_course_sidebar_context(app, pagename, templatename, context, doctree):
 
 def setup(app):
     app.add_directive("course-interactive", CourseInteractiveDirective)
+    app.add_directive("foldbox", FoldBoxDirective)
     app.connect("html-page-context", add_course_sidebar_context)

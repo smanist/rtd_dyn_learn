@@ -14,6 +14,36 @@ Use MyST math fences for display equations:
 
 You can reference the equation with {eq}`eq:sample-ode`.
 
+## Folded Derivations
+
+Use `foldbox` for detailed derivations that should be collapsed by default:
+
+````md
+:::{foldbox} Detailed derivation
+
+Starting from the perturbation $x = x^\ast + \delta x$,
+
+```{math}
+\delta \dot{x}
+= \left.\ppf{f}{x}\right|_{x^\ast} \delta x .
+```
+
+:::
+````
+
+Rendered example:
+
+:::{foldbox} Detailed derivation
+
+Starting from the perturbation $x = x^\ast + \delta x$,
+
+```{math}
+\delta \dot{x}
+= \left.\ppf{f}{x}\right|_{x^\ast} \delta x .
+```
+
+:::
+
 ## Figures
 
 Keep reusable figures under `docs/pics/` or another documented static asset

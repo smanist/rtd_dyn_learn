@@ -253,3 +253,45 @@ div.bodywrapper {
   color: var(--color-foreground-muted, #5f6c7b);
   font-size: 0.9rem;
 }
+
+.foldbox {
+  background: #fbfcfe;
+  border: 1px solid var(--color-background-border, #d8dee9);
+  border-radius: 6px;
+  box-sizing: border-box;
+  margin: 1.25rem 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.foldbox__summary {
+  background: #f1f4f8;
+  color: #1f2933;
+  cursor: pointer;
+  font-weight: 650;
+  line-height: 1.35;
+  padding: 0.7rem 0.9rem;
+}
+
+.foldbox__summary:hover,
+.foldbox__summary:focus {
+  background: #e8edf3;
+}
+
+.foldbox__summary:focus {
+  outline: 2px solid #5b8def;
+  outline-offset: -2px;
+}
+
+.foldbox__content {
+  box-sizing: border-box;
+  padding: 0.9rem;
+}
+
+.foldbox__content > :first-child {
+  margin-top: 0;
+}
+
+.foldbox__content > :last-child {
+  margin-bottom: 0;
+}

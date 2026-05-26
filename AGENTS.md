@@ -10,6 +10,21 @@ This repository is a static Sphinx/MyST site for interactive course notes.
   example, Chapter 1 "Model Taxonomy" should be
   `docs/chapters/01_model_taxonomy.md`.
 - Prefer MyST syntax for math, cross-references, figures, and directives.
+- Use the repo-local `foldbox` MyST directive for detailed math derivations or
+  other optional technical detail that should be folded by default:
+
+  ````md
+  :::{foldbox} Detailed derivation
+
+  ```{math}
+  \delta \dot{x}
+  = \left.\ppf{f}{x}\right|_{x^\ast} \delta x .
+  ```
+
+  :::
+  ````
+
+  Add the `:open:` option only when a foldbox should be expanded initially.
 - Keep Sphinx configuration in `docs/conf.py`.
 - Keep shared styling in `docs/_static/css/`.
 - Keep browser-side interactive code in `docs/_static/js/`.

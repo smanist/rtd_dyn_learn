@@ -5,6 +5,7 @@ Markdown, Sphinx cross-references, figures, and LaTeX equations.
 
 ```{toctree}
 :maxdepth: 1
+:numbered: 3
 :caption: Contents
 
 chapters/01_problem_formulation_what_does_it_mean_to_learn_dynamics
@@ -29,6 +30,12 @@ chapters/19_identification_for_control_and_closed_loop_learning
 chapters/20_stochastic_dynamics_and_probabilistic_learning
 chapters/21_constraints_geometry_and_invariance_in_learned_dynamics
 chapters/22_reduced_order_dynamics_and_closure
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Reference
+
 chapters/getting-started
 chapters/interactive-example
 ```

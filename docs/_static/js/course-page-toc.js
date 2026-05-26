@@ -24,11 +24,51 @@
     const link = document.createElement("a");
 
     item.className = `course-page-toc__item course-page-toc__item--${heading.tagName.toLowerCase()}`;
+    item.dataset.sectionId = sectionId;
     link.href = `#${sectionId}`;
     link.textContent = text;
     item.append(link);
 
     return item;
+  }
+
+  function setCurrentTocItem(toc, sectionId) {
+    toc.querySelectorAll(".course-page-toc__item").forEach((item) => {
+      const isCurrent = item.dataset.sectionId === sectionId;
+      item.classList.toggle("course-page-toc__item--current", isCurrent);
+      const link = item.querySelector("a");
+      if (link) {
+        if (isCurrent) {
+          link.setAttribute("aria-current", "location");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      }
+    });
+  }
+
+  function initCurrentSectionTracking(toc, headings) {
+    function currentSectionId() {
+      const offset = 24;
+      let current = sectionIdForHeading(headings[0]);
+
+      headings.forEach((heading) => {
+        if (heading.getBoundingClientRect().top <= offset) {
+          current = sectionIdForHeading(heading);
+        }
+      });
+
+      return current;
+    }
+
+    function refresh() {
+      setCurrentTocItem(toc, currentSectionId());
+    }
+
+    window.addEventListener("scroll", refresh, { passive: true });
+    window.addEventListener("resize", refresh);
+    window.addEventListener("hashchange", refresh);
+    refresh();
   }
 
   function initPageToc() {
@@ -39,7 +79,8 @@
       return;
     }
 
-    const items = [...body.querySelectorAll("section[id] > h2, section[id] > h3")]
+    const headings = [...body.querySelectorAll("section[id] > h2, section[id] > h3")];
+    const items = headings
       .map(createItem)
       .filter(Boolean);
 
@@ -60,6 +101,7 @@
     toc.append(title, list);
 
     documentWrapper.prepend(toc);
+    initCurrentSectionTracking(toc, headings);
   }
 
   document.addEventListener("DOMContentLoaded", initPageToc);

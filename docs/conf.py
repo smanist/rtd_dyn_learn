@@ -28,6 +28,10 @@ myst_enable_extensions = [
 ]
 
 myst_heading_anchors = 3
+suppress_warnings = [
+    # Grouped chapter child pages intentionally preserve original ## headings.
+    "myst.header",
+]
 numfig = True
 
 html_theme = "alabaster"
@@ -83,13 +87,6 @@ def _doc_title(env, docname, explicit_title=None):
     return docname.rsplit("/", 1)[-1].replace("_", " ").title()
 
 
-def _chapter_number(docname):
-    match = re.match(r"^chapters/(\d{2})_", docname)
-    if match is None:
-        return None
-    return int(match.group(1))
-
-
 def _toctree_entries(env, docname):
     doctree = env.get_doctree(docname)
     for node in doctree.findall(addnodes.toctree):
@@ -102,7 +99,8 @@ def _toctree_entries(env, docname):
 
 
 def _chapter_number(docname):
-    basename = docname.rsplit("/", 1)[-1]
+    parts = docname.split("/")
+    basename = parts[-2] if parts[-1] == "index" and len(parts) > 1 else parts[-1]
     match = re.match(r"(\d+)_", basename)
     if match is None:
         return None

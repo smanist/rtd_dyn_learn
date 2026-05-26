@@ -170,10 +170,23 @@ def ensure_trailing_newline(text: str) -> str:
 
 def make_parent(lines: list[str], groups: list[SectionGroup], middle_start: int, summary_start: int) -> str:
     before = "".join(lines[:middle_start]).rstrip()
-    summary = "".join(lines[summary_start:]).lstrip()
-    links = ["## Sections", ""]
+    summary_lines = list(lines[summary_start:])
+    summary_lines[0] = "**Summary**\n"
+    summary = "".join(summary_lines).lstrip()
+    links = ["**Sections**", ""]
     links.extend(f"- [{group.link_title}]({group.file_name})" for group in groups)
-    links.append("")
+    links.extend(
+        [
+            "",
+            "```{toctree}",
+            ":hidden:",
+            ":maxdepth: 1",
+            "",
+            *[Path(group.file_name).stem for group in groups],
+            "```",
+            "",
+        ]
+    )
     parent = before + "\n\n" + "\n".join(links) + "\n" + summary
     return ensure_trailing_newline(parent)
 

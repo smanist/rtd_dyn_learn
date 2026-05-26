@@ -14,6 +14,7 @@ Use this skill to convert one chapter file under `docs/chapters/` into a folder 
 - Keep the original page title, foreword content before the first split section, and final `## Summary` section in `index.md`.
 - Replace the middle content with links to child pages.
 - Put child pages in the same folder, one file per split group.
+- Add a hidden toctree for the child pages so Sphinx includes them in the grouped chapter navigation.
 - Update `docs/index.md` so the toctree entry points to `chapters/NN_slug/index`.
 - Run `make check` before handoff.
 
@@ -22,6 +23,8 @@ Use this skill to convert one chapter file under `docs/chapters/` into a folder 
 - Default split: each level-2 section between the foreword and `## Summary` becomes one child page.
 - Custom split: if the user names split starts, make each group begin at that `##` heading and include following sections until the next specified split start or `## Summary`.
 - Treat `## Summary` as the final section that remains on `index.md`; do not create a child page for it.
+- In the new `index.md`, render `Sections` and `Summary` as bold text, not Markdown headings.
+- In child pages, preserve the moved section heading levels exactly; a moved `##` heading must remain `##`, not become `#`.
 - Preserve all content inside each moved section, including subsections, MyST directives, labels, math fences, figures, and interactive placeholders.
 - Do not split inside fenced code blocks, math fences, MyST directives, or raw HTML blocks.
 
@@ -37,6 +40,7 @@ Use this skill to convert one chapter file under `docs/chapters/` into a folder 
 3. Choose split starts:
    - Use every non-`Summary` level-2 heading by default.
    - Use the user's specified level-2 headings for custom grouping.
+   - Include the first non-summary level-2 heading as the first split start for custom grouping.
 4. Preview the operation:
 
    ```bash
@@ -52,25 +56,41 @@ Use this skill to convert one chapter file under `docs/chapters/` into a folder 
    ```
 
 6. Review the diff manually. Check that:
-   - `index.md` still has exactly one `#` page title.
-   - The link list appears between the foreword and `## Summary`.
-   - Child pages do not contain a duplicate `#` page title from the original page.
+   - `index.md` still has exactly one `#` page title and no `## Sections` or `## Summary` headings.
+   - The visible link list and hidden toctree appear between the foreword and bold `**Summary**`.
+   - Child pages begin with the original moved heading level, usually `##`.
    - Slugs are readable and stable.
    - `docs/index.md` links to `chapters/NN_slug/index`.
 7. Run `make check`. For behavior-changing interactives, also verify one rendered page in a browser.
 
 ## Link List Style
 
-Use a compact MyST-friendly list on the parent page:
+Use a compact MyST-friendly list on the parent page, followed by a hidden toctree:
 
-```md
-## Sections
+````md
+**Sections**
 
 - [Section title](section-title.md)
 - [First section - Last section](first-section.md)
+
+```{toctree}
+:hidden:
+:maxdepth: 1
+
+section-title
+first-section
 ```
 
+**Summary**
+````
+
 If the original chapter already has a level-2 heading between the foreword and content that should not be moved, do not invent a different structure; ask the user for split starts or handle it conservatively after inspecting the chapter.
+
+## Sidebar Numbering
+
+Grouped chapters use `chapters/NN_slug/index` in the root toctree. The custom sidebar code in `docs/conf.py` must compute the chapter number from the folder name when a docname ends in `/index`; otherwise grouped chapters appear unnumbered in the left navigation.
+
+Because child pages intentionally preserve original `##` headings, the repo configuration should suppress the expected `myst.header` warning for these grouped pages.
 
 ## Failure Handling
 

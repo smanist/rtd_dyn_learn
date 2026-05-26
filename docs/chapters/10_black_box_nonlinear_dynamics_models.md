@@ -266,7 +266,7 @@ The important comparison is therefore not "which architecture is most
 expressive?" but "which architecture matches the data, the observation process,
 and the downstream task with the fewest hidden failure modes?"
 
-## Main Takeaways
+## Summary
 
 Black-box nonlinear dynamics models replace known structure with flexible
 function classes, but they do not eliminate modeling assumptions. The main

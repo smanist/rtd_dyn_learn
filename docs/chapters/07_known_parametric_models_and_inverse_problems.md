@@ -366,7 +366,7 @@ These points explain why inverse problems sit at the intersection of modeling,
 numerics, statistics, and experiment design. The challenge is not only to fit
 parameters, but to know whether the fitted values mean what we hope they mean.
 
-## Main Takeaways
+## Summary
 
 When the model structure is known, learning dynamics becomes an inverse problem
 for the parameter vector $\theta$. Prediction-error minimization, maximum

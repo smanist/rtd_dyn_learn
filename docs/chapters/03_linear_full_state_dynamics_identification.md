@@ -350,7 +350,7 @@ a chosen proxy representation. Second, DMD does not remove the need for
 excitation, conditioning, noise handling, or stability checks. It inherits all
 of those issues because it is one instance of linear full-state identification.
 
-## What This Chapter Should Leave You With
+## Summary
 
 Linear full-state identification is the right baseline whenever direct state
 measurements make the hidden-state problem unnecessary and a linear model is a

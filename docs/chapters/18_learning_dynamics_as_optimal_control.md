@@ -283,7 +283,7 @@ model to whatever data happen to be available, we design experiments that
 reduce uncertainty in the directions that matter for prediction, explanation,
 or downstream control.
 
-## Why the Optimal-Control View Clarifies Long-Horizon Learning
+## Summary
 
 Long-horizon identification often fails for reasons that are hard to see in a
 pure regression formulation:

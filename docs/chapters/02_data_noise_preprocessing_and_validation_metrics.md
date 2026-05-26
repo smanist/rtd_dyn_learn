@@ -252,7 +252,7 @@ The split should mirror the claim we want the model to support. If we claim a
 model generalizes across operating conditions, then a split that mixes all
 conditions into both train and test sets does not test that claim.
 
-## A Practical Chapter 02 Checklist
+## Summary
 
 Before moving on to identification methods, it is worth checking the following:
 

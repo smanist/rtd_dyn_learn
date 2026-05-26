@@ -216,7 +216,7 @@ accuracy, and control performance are all legitimate metrics, but they answer
 different questions. Validation is therefore part of the problem statement, not
 only an after-the-fact scorecard.
 
-## From Formulation to Method Choice
+## Summary
 
 This chapter frames the rest of the course. Once we know whether we are
 learning a map, vector field, parameter set, closure term, latent state, or

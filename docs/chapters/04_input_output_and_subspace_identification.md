@@ -399,7 +399,7 @@ then applying DMD in that lifted space. This is why Hankel DMD belongs in the
 conceptual neighborhood of subspace identification even though it is often
 introduced through Koopman or delay-coordinate language.
 
-## What This Chapter Adds
+## Summary
 
 The main lesson of this chapter is that hidden state is not an obstacle to be
 patched after the fact. It changes the identification problem itself.

@@ -242,7 +242,7 @@ multi-step rollout stability, transfer across trajectories, recovery of hidden
 variables when ground truth exists, or success in downstream estimation and
 control tasks.
 
-## What Makes a Reconstructed State Useful?
+## Summary
 
 A useful reconstructed state should satisfy three practical tests.
 

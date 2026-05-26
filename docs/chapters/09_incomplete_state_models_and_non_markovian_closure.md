@@ -271,7 +271,7 @@ data must expose how unresolved dynamics feed back into resolved variables over
 time. Short, weakly forced, or nearly steady trajectories may be insufficient
 to distinguish a static residual from a true memory mechanism.
 
-## Main Takeaways
+## Summary
 
 Incomplete-state dynamics and residual-model errors are not the same problem.
 If the retained state is not Markovian, then a reduced model needs some way to

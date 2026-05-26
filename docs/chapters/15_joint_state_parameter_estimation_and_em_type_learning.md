@@ -297,7 +297,7 @@ posterior has flat directions, ridges, or multiple modes. In practice, one
 should inspect sensitivity to priors, initialization, smoothing assumptions,
 and input design rather than trusting a single fitted parameter vector.
 
-## What This Chapter Adds to System Identification
+## Summary
 
 The main lesson of joint state-parameter estimation is that learning dynamics
 from partial observations is fundamentally an inference problem over latent

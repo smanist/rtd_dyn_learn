@@ -270,7 +270,7 @@ closed-loop system will actually visit. That observation explains why local
 surrogates, LPV models, and multi-regime models remain important even when more
 expressive black-box architectures are available.
 
-## What This Chapter Adds to the Course Arc
+## Summary
 
 The main lesson is that inputs and operating parameters are not minor
 decorations on an autonomous model. They change the identifiability question,

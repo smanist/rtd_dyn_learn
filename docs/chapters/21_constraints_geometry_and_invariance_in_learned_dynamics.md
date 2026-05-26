@@ -354,7 +354,7 @@ These checks are not secondary embellishments. They are often the actual test
 of whether the learned dynamics remain faithful outside the interpolation regime
 of the training set.
 
-## Perspective
+## Summary
 
 Constraints, geometry, and invariance do not define one specialized corner of
 dynamics learning. They expose a general principle: the most useful inductive

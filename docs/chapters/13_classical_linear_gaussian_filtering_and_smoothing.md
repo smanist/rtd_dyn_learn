@@ -348,7 +348,7 @@ data, while prediction-error methods choose parameters that make the filter's
 innovations statistically small. Both are trying to explain the same measured
 trajectories with a hidden linear dynamical model.
 
-## What This Chapter Adds to the Course Thread
+## Summary
 
 The main contribution of the classical linear Gaussian theory is clarity. It
 shows, in a setting where every formula is explicit, how state estimation,

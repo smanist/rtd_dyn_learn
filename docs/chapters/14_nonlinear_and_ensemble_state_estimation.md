@@ -295,3 +295,7 @@ standalone estimators but also as subroutines inside broader identification and
 assimilation pipelines. They let us infer hidden trajectories, compare model
 classes under partial observations, and quantify how much of the remaining
 error comes from state uncertainty versus model misspecification.
+
+## Summary
+
+Stub

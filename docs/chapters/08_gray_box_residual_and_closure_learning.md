@@ -311,7 +311,7 @@ failure modes include:
 The discipline of gray-box learning is to be explicit about what is known, what
 is missing, and what evidence supports the chosen form of the correction.
 
-## Main Takeaways
+## Summary
 
 Gray-box residual and closure learning occupies the middle ground between
 inverse problems in known models and fully black-box dynamics learning. The key

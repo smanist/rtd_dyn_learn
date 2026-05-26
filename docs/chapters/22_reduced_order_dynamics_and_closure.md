@@ -267,7 +267,7 @@ Parametric ROMs are especially important for design studies, robust control,
 and uncertainty propagation. A reduced model that is accurate at one operating
 point but unstable or biased away from that point is of limited practical use.
 
-## Validation for Prediction, Uncertainty, and Control
+## Summary
 
 Reduced models should be validated against their intended use, not only by
 reconstruction error. Several questions matter:

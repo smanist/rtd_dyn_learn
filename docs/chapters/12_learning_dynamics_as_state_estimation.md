@@ -228,7 +228,7 @@ incomplete. That makes the learned model more honest: it can represent the
 predictable dynamics without falsely claiming that every residual has been
 explained mechanistically.
 
-## Relation to Later Chapters
+## Summary
 
 This chapter is conceptual rather than algorithmic. Its main purpose is to
 replace a narrow regression mindset with a latent-state viewpoint that will

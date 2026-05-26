@@ -289,7 +289,7 @@ Derivative-free continuous-time formulations occupy the middle ground. They keep
 the vector-field viewpoint while avoiding the most unstable part of the direct
 approach, namely differentiation of noisy measurements.
 
-## Main Takeaways
+## Summary
 
 Continuous-time identification is not just discrete-time regression with dots
 added to the variables. The central difficulty is that sampled data do not

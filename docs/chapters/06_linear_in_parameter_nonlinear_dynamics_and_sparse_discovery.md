@@ -227,7 +227,7 @@ state quality, excitation, coordinate choice, library design, sparsity
 assumptions, and validation strategy. The right question is not "Did the solver
 return a sparse model?" but "Why should this sparse model be trusted?"
 
-## Main Takeaways
+## Summary
 
 - Nonlinear dynamics can be written as regression over a candidate feature library that is nonlinear in state but linear in coefficients.
 - SINDy is the archetypal sparse-discovery method, and its control, group-sparse, constrained, weak-form, and integral variants all modify the same core regression idea.

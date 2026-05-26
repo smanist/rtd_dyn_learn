@@ -79,12 +79,16 @@
       return;
     }
 
-    const headings = [...body.querySelectorAll("section[id] > h2, section[id] > h3")];
+    const isGroupChild = Boolean(document.querySelector(".sphinxsidebar .toctree-l2.current"));
+    const selector = isGroupChild
+      ? "section[id] > h1, section[id] > h2, section[id] > h3"
+      : "section[id] > h2, section[id] > h3";
+    const headings = [...body.querySelectorAll(selector)];
     const items = headings
       .map(createItem)
       .filter(Boolean);
 
-    if (items.length < 2) {
+    if (items.length < (isGroupChild ? 1 : 2)) {
       return;
     }
 

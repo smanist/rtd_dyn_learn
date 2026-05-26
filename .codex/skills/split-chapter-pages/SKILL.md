@@ -92,6 +92,8 @@ Grouped chapters use `chapters/NN_slug/index` in the root toctree. The custom si
 
 Because child pages intentionally preserve original `##` headings, the repo configuration should suppress the expected `myst.header` warning for these grouped pages.
 
+The right page navigation script should treat grouped child pages specially: include rendered `h1` headings and show the page TOC even when there is only one item. This keeps single-section child pages navigable after Sphinx renders preserved `##` source headings as page-level HTML headings.
+
 ## Failure Handling
 
 - If the target folder already exists, stop and inspect before editing; do not overwrite child pages blindly.

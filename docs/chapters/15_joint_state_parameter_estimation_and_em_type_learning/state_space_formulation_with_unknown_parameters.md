@@ -118,3 +118,129 @@ Augmented-state and dual schemes are often practical online approximations.
 They are useful when data arrive sequentially and a fully batch method is too
 expensive. Their main limitation is that they can understate posterior
 coupling between $x_{0:N}$ and $\theta$.
+
+## Shared Nonlinear Benchmark for Examples
+
+The worked examples in the EM, MAP/Laplace, and variational sections use the
+same partially observed nonlinear oscillator so that their behavior can be
+compared directly:
+
+```{math}
+:label: eq:ch15-shared-benchmark-model
+
+x_k
+=
+\begin{bmatrix}
+q_k\\
+v_k
+\end{bmatrix},
+\qquad
+x_{k+1}
+=
+\begin{bmatrix}
+q_k + \Delta t\, v_k\\
+v_k + \Delta t\left(-\theta \sin q_k - c v_k\right)
+\end{bmatrix}
++ w_k,
+\qquad
+y_k = q_k + \eta_k.
+```
+
+Here $c=0.15$, $\Delta t=0.15$, and the unknown scalar parameter
+$\theta$ controls the restoring force. Only position $q_k$ is observed, so
+velocity is latent. The benchmark fixes
+$\theta_{\mathrm{true}}=1.35$,
+$Q=\operatorname{diag}(0.015^2,0.08^2)$, $R=0.12^2$,
+$x_0\sim\mathcal{N}([0.9,0]^\top,\operatorname{diag}(0.25^2,0.25^2))$,
+and $\theta\sim\mathcal{N}(0.9,0.35^2)$.
+
+The common simulation utilities and Gauss-Newton helper are:
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(7)
+
+dt, c, N = 0.15, 0.15, 40
+theta_true = 1.35
+Q_std = np.array([0.015, 0.08])
+Q = np.diag(Q_std**2)
+Q_inv = np.diag(1.0 / Q_std**2)
+Q_sqrt_inv = np.diag(1.0 / Q_std)
+sigma_y = 0.12
+R = sigma_y**2
+H = np.array([[1.0, 0.0]])
+
+m0 = np.array([0.9, 0.0])
+P0 = np.diag([0.25**2, 0.25**2])
+P0_sqrt_inv = np.diag([1.0 / 0.25, 1.0 / 0.25])
+theta_mean, sigma_theta = 0.9, 0.35
+prior_precision = 1.0 / sigma_theta**2
+
+
+def F(x, theta):
+    q, v = x
+    return np.array([
+        q + dt * v,
+        v + dt * (-theta * np.sin(q) - c * v),
+    ])
+
+
+def dF_dx(x, theta):
+    q, _ = x
+    return np.array([
+        [1.0, dt],
+        [-dt * theta * np.cos(q), 1.0 - dt * c],
+    ])
+
+
+def dF_dtheta(x):
+    q, _ = x
+    return np.array([0.0, -dt * np.sin(q)])
+
+
+def ddF_dtheta_dx(x):
+    q, _ = x
+    return np.array([
+        [0.0, 0.0],
+        [-dt * np.cos(q), 0.0],
+    ])
+
+
+def solve_damped_least_squares(z0, residual_and_jacobian, max_iter=8, damping=1e-2):
+    z = z0.copy()
+    history = []
+    for _ in range(max_iter):
+        r, J = residual_and_jacobian(z)
+        objective = 0.5 * (r @ r)
+        history.append(objective)
+        H_gn = J.T @ J
+        g = J.T @ r
+        local_damping = damping
+
+        while True:
+            step = np.linalg.solve(H_gn + local_damping * np.eye(z.size), -g)
+            candidate = z + step
+            r_candidate, _ = residual_and_jacobian(candidate)
+            candidate_objective = 0.5 * (r_candidate @ r_candidate)
+            if candidate_objective < objective:
+                z = candidate
+                damping = max(local_damping / 3.0, 1e-6)
+                break
+            local_damping *= 10.0
+
+        if np.linalg.norm(step) < 1e-6 * (1.0 + np.linalg.norm(z)):
+            break
+
+    return z, history
+
+
+x_true = np.zeros((N + 1, 2))
+x_true[0] = np.array([1.1, -0.15])
+for k in range(N):
+    x_true[k + 1] = F(x_true[k], theta_true) + Q_std * rng.normal(size=2)
+y = x_true[:, 0] + sigma_y * rng.normal(size=N + 1)
+```
+
+The later code blocks assume this setup has already been run and show only the
+method-specific estimation logic.

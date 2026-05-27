@@ -367,42 +367,10 @@ approximations even if they are more expensive.
 
 ## Minimal EM+EKS Joint State-Parameter Example
 
-To keep the Chapter 15 examples comparable, use the same partially observed
-nonlinear oscillator as the other worked examples:
-
-```{math}
-:label: eq:ch15-em-shared-model
-
-x_k
-=
-\begin{bmatrix}
-q_k\\
-v_k
-\end{bmatrix},
-\qquad
-x_{k+1}
-=
-\begin{bmatrix}
-q_k + \Delta t\, v_k\\
-v_k + \Delta t\left(-\theta \sin q_k - c v_k\right)
-\end{bmatrix}
-+ w_k,
-\qquad
-y_k = q_k + \eta_k,
-```
-
-with known damping $c=0.15$, step size $\Delta t=0.15$, and one unknown scalar
-parameter $\theta$. Only the position $q_k$ is measured, so the velocity is
-latent. For this minimal benchmark, fix
-
-- $\theta_{\mathrm{true}} = 1.35$,
-- $Q=\operatorname{diag}(0.015^2,\,0.08^2)$,
-- $R=0.12^2$,
-- $x_0 \sim \mathcal{N}([0.9,\;0.0]^\top,\operatorname{diag}(0.25^2,\,0.25^2))$,
-- $\theta \sim \mathcal{N}(0.9,\,0.35^2)$.
-
-The goal is to estimate both the hidden trajectory and $\theta$ from one noisy
-position record. In this simplified EM-type example, the two steps are:
+Using the shared benchmark in
+{eq}`eq:ch15-shared-benchmark-model`, the goal is to estimate both the hidden
+trajectory and $\theta$ from one noisy position record. In this simplified
+EM-type example, the two steps are:
 
 1. E-step: with $\theta^{(i)}$ fixed, run an extended Kalman filter followed by
    a Rauch-Tung-Striebel backward pass to get approximate smoothed means
@@ -418,51 +386,12 @@ $\sin(\widehat{q}_{k|N}^{(i)})$ to keep the update readable.
 
 ## Minimal Implementation
 
-The code below simulates one trajectory from
-{eq}`eq:ch15-em-shared-model`, runs eight EM iterations, and records both the
-parameter trace and the EKF innovation log-likelihood:
+The code below assumes the shared benchmark setup has already been run. It
+adds only the EM-specific smoother and scalar M-step, then runs eight EM
+iterations while recording the parameter trace and EKF innovation
+log-likelihood:
 
 ```python
-import numpy as np
-
-rng = np.random.default_rng(7)
-
-dt, c, N = 0.15, 0.15, 40
-theta_true = 1.35
-Q = np.diag([0.015**2, 0.08**2])
-R = 0.12**2
-H = np.array([[1.0, 0.0]])
-
-m0 = np.array([0.9, 0.0])
-P0 = np.diag([0.25**2, 0.25**2])
-theta_prior_mean, theta_prior_std = 0.9, 0.35
-
-
-def F(x, theta):
-    q, v = x
-    return np.array([
-        q + dt * v,
-        v + dt * (-theta * np.sin(q) - c * v),
-    ])
-
-
-def dF_dx(x, theta):
-    q, _ = x
-    return np.array([
-        [1.0, dt],
-        [-dt * theta * np.cos(q), 1.0 - dt * c],
-    ])
-
-
-x_true = np.zeros((N + 1, 2))
-x_true[0] = np.array([1.1, -0.15])
-for k in range(N):
-    x_true[k + 1] = F(x_true[k], theta_true) + rng.multivariate_normal(
-        np.zeros(2), Q
-    )
-y = x_true[:, 0] + np.sqrt(R) * rng.normal(size=N + 1)
-
-
 def ekf_smoother(y, theta):
     x_filter = np.zeros((N + 1, 2))
     P_filter = np.zeros((N + 1, 2, 2))
@@ -512,8 +441,8 @@ def ekf_smoother(y, theta):
 
 def m_step_theta(x_smooth):
     sigma_v2 = Q[1, 1]
-    numerator = theta_prior_mean / theta_prior_std**2
-    denominator = 1.0 / theta_prior_std**2
+    numerator = theta_mean / sigma_theta**2
+    denominator = 1.0 / sigma_theta**2
 
     for k in range(N):
         a_k = x_smooth[k + 1, 1] - (1.0 - dt * c) * x_smooth[k, 1]
@@ -524,7 +453,7 @@ def m_step_theta(x_smooth):
     return numerator / denominator
 
 
-theta = theta_prior_mean
+theta = theta_mean
 theta_history = []
 loglik_history = []
 

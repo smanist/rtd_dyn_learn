@@ -21,7 +21,8 @@ different approximations.
 
 - [State-Space Formulation with Unknown Parameters - Augmented-State and Dual Estimation Viewpoints](state_space_formulation_with_unknown_parameters.md)
 - [EM as Repeated Smoothing and Parameter Update - Approximate E-Steps for Nonlinear Models](em_as_repeated_smoothing_and_parameter_update.md)
-- [MAP and Laplace Viewpoints - Variational Inference and ELBO Formulations](map_and_laplace_viewpoints.md)
+- [MAP and Laplace Viewpoints](map_and_laplace_viewpoints.md)
+- [Variational Inference and ELBO Formulations](variational_inference_and_elbo_formulations.md)
 - [Identifiability Under Partial Observations](identifiability_under_partial_observations.md)
 
 ```{toctree}
@@ -31,6 +32,7 @@ different approximations.
 state_space_formulation_with_unknown_parameters
 em_as_repeated_smoothing_and_parameter_update
 map_and_laplace_viewpoints
+variational_inference_and_elbo_formulations
 identifiability_under_partial_observations
 ```
 

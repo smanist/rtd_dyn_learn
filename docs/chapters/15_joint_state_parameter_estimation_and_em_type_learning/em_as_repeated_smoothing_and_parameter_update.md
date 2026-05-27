@@ -364,3 +364,224 @@ The right approximation therefore depends on the regime. Mildly nonlinear,
 moderately observed systems may support EKF- or ensemble-based EM. Strongly
 nonlinear, multimodal problems may require particle or optimization-based
 approximations even if they are more expensive.
+
+## Minimal EM+EKS Joint State-Parameter Example
+
+Using the shared benchmark in
+{eq}`eq:ch15-shared-benchmark-model`, the goal is to estimate both the hidden
+trajectory and $\theta$ from one noisy position record. In this simplified
+EM-type example, the two steps are:
+
+1. E-step: with $\theta^{(i)}$ fixed, run an extended Kalman filter followed by
+   a Rauch-Tung-Striebel backward pass to get approximate smoothed means
+   $\widehat{x}_{k|N}^{(i)}$ and covariances $P_{k|N}^{(i)}$.
+2. M-step: freeze the nonlinear factor $\sin q_k$ at the smoothed mean
+   $\widehat{q}_{k|N}^{(i)}$ and update $\theta$ by a scalar weighted least-
+   squares solve.
+
+That second step is why this is an EM-type method rather than exact EM: the
+E-step is already approximate because it uses local linearization, and the
+M-step replaces $\mathbb{E}[\sin q_k\mid y]$ by
+$\sin(\widehat{q}_{k|N}^{(i)})$ to keep the update readable.
+
+## Minimal Implementation
+
+The code below assumes the shared benchmark setup has already been run. It
+adds only the EM-specific smoother and scalar M-step, then runs eight EM
+iterations while recording the parameter trace and EKF innovation
+log-likelihood:
+
+```python
+def ekf_smoother(y, theta):
+    x_filter = np.zeros((N + 1, 2))
+    P_filter = np.zeros((N + 1, 2, 2))
+    x_pred = np.zeros((N + 1, 2))
+    P_pred = np.zeros((N + 1, 2, 2))
+    innovation_loglik = 0.0
+
+    x_pred[0] = m0
+    P_pred[0] = P0
+    innovation = y[0] - x_pred[0, 0]
+    S = H @ P_pred[0] @ H.T + np.array([[R]])
+    K = P_pred[0] @ H.T / S[0, 0]
+    x_filter[0] = x_pred[0] + K[:, 0] * innovation
+    P_filter[0] = (np.eye(2) - K @ H) @ P_pred[0]
+    innovation_loglik += -0.5 * (
+        np.log(2.0 * np.pi * S[0, 0]) + innovation**2 / S[0, 0]
+    )
+
+    A_history = []
+    for k in range(N):
+        A_k = dF_dx(x_filter[k], theta)
+        A_history.append(A_k)
+        x_pred[k + 1] = F(x_filter[k], theta)
+        P_pred[k + 1] = A_k @ P_filter[k] @ A_k.T + Q
+
+        innovation = y[k + 1] - x_pred[k + 1, 0]
+        S = H @ P_pred[k + 1] @ H.T + np.array([[R]])
+        K = P_pred[k + 1] @ H.T / S[0, 0]
+        x_filter[k + 1] = x_pred[k + 1] + K[:, 0] * innovation
+        P_filter[k + 1] = (np.eye(2) - K @ H) @ P_pred[k + 1]
+        innovation_loglik += -0.5 * (
+            np.log(2.0 * np.pi * S[0, 0]) + innovation**2 / S[0, 0]
+        )
+
+    x_smooth = x_filter.copy()
+    P_smooth = P_filter.copy()
+    for k in range(N - 1, -1, -1):
+        C_k = P_filter[k] @ A_history[k].T @ np.linalg.inv(P_pred[k + 1])
+        x_smooth[k] = x_filter[k] + C_k @ (x_smooth[k + 1] - x_pred[k + 1])
+        P_smooth[k] = (
+            P_filter[k]
+            + C_k @ (P_smooth[k + 1] - P_pred[k + 1]) @ C_k.T
+        )
+
+    return x_smooth, P_smooth, innovation_loglik
+
+
+def m_step_theta(x_smooth):
+    sigma_v2 = Q[1, 1]
+    numerator = theta_mean / sigma_theta**2
+    denominator = 1.0 / sigma_theta**2
+
+    for k in range(N):
+        a_k = x_smooth[k + 1, 1] - (1.0 - dt * c) * x_smooth[k, 1]
+        b_k = -dt * np.sin(x_smooth[k, 0])
+        numerator += b_k * a_k / sigma_v2
+        denominator += b_k * b_k / sigma_v2
+
+    return numerator / denominator
+
+
+theta = theta_mean
+theta_history = []
+loglik_history = []
+
+for _ in range(8):
+    x_smooth, P_smooth, innovation_loglik = ekf_smoother(y, theta)
+    theta_history.append(theta)
+    loglik_history.append(innovation_loglik)
+    theta = m_step_theta(x_smooth)
+
+x_smooth, P_smooth, _ = ekf_smoother(y, theta)
+```
+
+On this benchmark, the parameter estimate moves from the prior mean $0.9$ to
+$\widehat{\theta}\approx 1.290$ while the innovation log-likelihood rises from
+about $15.28$ to $21.07$. The final smoothed position has root-mean-square
+error about $0.024$, compared with about $0.097$ for the raw observations.
+
+```{figure} em_eks_convergence.svg
+:alt: EM plus extended Kalman smoothing convergence history for the Chapter 15 benchmark.
+:width: 98%
+
+Left: the scalar M-step pushes $\theta$ quickly toward a stable value. Right:
+the EKF innovation log-likelihood from the E-step improves sharply in the first
+few EM iterations and then plateaus.
+```
+
+```{figure} em_eks_reconstruction.svg
+:alt: Reconstructed position and latent velocity for the Chapter 15 EM plus extended Kalman smoothing example.
+:width: 98%
+
+Top: noisy position observations, the hidden true position, and the smoothed
+position reconstruction. Bottom: the hidden true velocity and the smoothed
+velocity estimate recovered from position-only data.
+```
+
+The reconstruction is stronger than the parameter estimate. That is typical in
+partially observed nonlinear problems: many nearby $\theta$ values can support
+similar smoothed trajectories over a short window, so the state estimate looks
+good before the parameter estimate becomes fully sharp.
+
+:::{foldbox} Simplified M-step for the scalar parameter
+
+Only the velocity equation depends on $\theta$, so with
+$\widehat{x}_{k|N}^{(i)}=[\widehat{q}_{k|N}^{(i)},\widehat{v}_{k|N}^{(i)}]^\top$
+the approximate transition residual is
+
+```{math}
+:label: eq:ch15-em-scalar-residual
+
+r_k(\theta)
+=
+\widehat{v}_{k+1|N}^{(i)}
+- \left(1-\Delta t\,c\right)\widehat{v}_{k|N}^{(i)}
++ \Delta t\,\theta \sin\!\left(\widehat{q}_{k|N}^{(i)}\right).
+```
+
+Ignoring constants independent of $\theta$, the approximate M-step reduces to
+the weighted least-squares cost
+
+```{math}
+:label: eq:ch15-em-scalar-objective
+
+\widetilde{\mathcal{J}}(\theta)
+=
+\frac{1}{2}\frac{(\theta-\mu_\theta)^2}{\sigma_\theta^2}
++
+\frac{1}{2}
+\sum_{k=0}^{N-1}
+\frac{r_k(\theta)^2}{Q_{vv}},
+```
+
+where $Q_{vv}=0.08^2$ is the process-noise variance for the velocity
+component. Write
+
+```{math}
+:label: eq:ch15-em-scalar-regression
+
+a_k
+=
+\widehat{v}_{k+1|N}^{(i)}
+- \left(1-\Delta t\,c\right)\widehat{v}_{k|N}^{(i)},
+\qquad
+b_k = -\Delta t \sin\!\left(\widehat{q}_{k|N}^{(i)}\right),
+```
+
+so that $r_k(\theta)=a_k-b_k\theta$. Minimizing
+{eq}`eq:ch15-em-scalar-objective` by setting its derivative to zero gives
+
+```{math}
+:label: eq:ch15-em-scalar-update
+
+\theta^{(i+1)}
+=
+\frac{
+\mu_\theta \sigma_\theta^{-2}
++
+\sum_{k=0}^{N-1} b_k a_k / Q_{vv}
+}{
+\sigma_\theta^{-2}
++
+\sum_{k=0}^{N-1} b_k^2 / Q_{vv}
+}.
+```
+
+This is just one-dimensional weighted least squares with a Gaussian prior. The
+full EM M-step still maximizes the expected complete-data log posterior; in
+this simplified derivation that is equivalent, up to $\theta$-independent
+constants and an overall minus sign, to minimizing
+$\widetilde{\mathcal{J}}(\theta)$. A more exact nonlinear EM update would replace
+$\sin(\widehat{q}_{k|N}^{(i)})$ by posterior expectations such as
+$\mathbb{E}[\sin q_k \mid y]$ and
+$\mathbb{E}[\sin^2 q_k \mid y]$, but the simplified formula is much easier to
+teach and already shows the E-step/M-step division clearly.
+
+:::
+
+## Behavior, Strengths, and Limitations
+
+- Behavior: most of the improvement happens in the first two or three EM
+  iterations, then both the parameter trace and the innovation log-likelihood
+  flatten.
+- Strength: the smoother uses temporal coupling to recover a plausible hidden
+  velocity trajectory even though only position is observed.
+- Limitation: the final parameter estimate stays below the true
+  $\theta_{\mathrm{true}}=1.35$ because the method relies on local
+  linearization and on the mean-field-style replacement
+  $\mathbb{E}[\sin q_k\mid y]\approx \sin(\widehat{q}_{k|N})$.
+
+This is exactly the teaching point of EM+EKS in Chapter 15: the workflow is
+simple and modular, but the quality of the result depends on how faithfully the
+approximate smoother captures the latent posterior.

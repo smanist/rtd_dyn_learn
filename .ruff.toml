@@ -1,0 +1,3 @@
+extend-exclude = [
+    ".codex/skills/split-chapter-pages/scripts/split_chapter_pages.py",
+]

@@ -1,9 +1,9 @@
-# Course Notes Skeleton
+# Course Notes
 
-A reusable static Sphinx/MyST starter for course notes with:
+A static Sphinx/MyST site for interactive course notes with:
 
 - Markdown chapters in `docs/chapters/`
-- MathJax macros configured in `docs/conf.py`
+- MathJax macros configured through `a_rtd.sphinx_ext`
 - A left navigation sidebar from Sphinx
 - A generated right sidebar for the current page
 - Browser-side interactive examples with lazy-loaded plotting/runtime libraries
@@ -54,6 +54,7 @@ make check-local-html
 
 For smoother Codex browser verification, allow `http://127.0.0.1:8765` in
 `.codex/browser/config.toml`:
+
 ```toml
 [origins]
 allowed = ["http://127.0.0.1:8765"]
@@ -66,36 +67,8 @@ prefix rules in `.codex/rules/default.rules`:
 prefix_rule(pattern=["make", "serve-html"], decision="allow")
 prefix_rule(pattern=["make", "check-local-html"], decision="allow")
 prefix_rule(pattern=["scripts/kill-local-http-server"], decision="allow")
-prefix_rule(pattern=["scripts/prepare-template-sync"], decision="allow")
 prefix_rule(pattern=["rm", "docs/_static/py/examples/__pycache__"], decision="allow")
 ```
-
-## Sync From This Template
-
-Course repositories created from this skeleton can use
-`scripts/prepare-template-sync` to review updates from a fresh `rtd_skeleton`
-commit without applying them immediately. Run it from a clean target course
-worktree:
-
-```bash
-scripts/prepare-template-sync --template-repo ../rtd_skeleton --ref main
-```
-
-The script fetches the template ref, writes review artifacts under
-`.git/template-sync/<timestamp>/`, and prints commands for reviewing the full
-candidate diff and selecting individual hunks with `git restore -p`. The
-generated artifact directory includes `stat.txt`, `files.txt`, `candidate.patch`,
-and `select-hunks.sh`.
-
-Useful options:
-
-- `--select` starts interactive hunk selection after writing the artifacts.
-- `--scaffold-only` excludes `docs/chapters/` so course content is left alone.
-- `--include-syllabus` includes `syllabus/`, which is excluded by default.
-- `--template-repo` and `--ref` choose a different template source or branch.
-
-After selecting hunks, inspect the working tree, run the relevant checks, and
-commit the accepted template updates.
 
 ## Add an Interactive Example
 
@@ -111,7 +84,7 @@ commit the accepted template updates.
 
 2. Add `docs/_static/js/examples/my-example.js`.
 3. Register the initializer with `CourseInteractives.registerExample("my-example", ...)`.
-4. Add the script to `html_js_files` in `docs/conf.py`.
+4. Add the script to `a_rtd_example_js_files` in `docs/conf.py`.
 
 For Python-backed examples, keep reusable Python source under
 `docs/_static/py/examples/`, load it through `CourseInteractives.staticAssetUrl`

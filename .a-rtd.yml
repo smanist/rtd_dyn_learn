@@ -1,0 +1,109 @@
+version: 1
+project:
+  name: Course Notes
+  profile: sphinx-myst-course
+  docs_dir: docs
+  site_url: null
+a_rtd:
+  version: 0.1.0
+  update_policy: managed-blocks
+profile: sphinx-myst-course
+managed_files:
+- path: .gitignore
+  mode: full
+  template: common/gitignore.j2
+- path: .readthedocs.yaml
+  mode: full
+  template: sphinx/readthedocs.yaml.j2
+- path: requirements.txt
+  mode: full
+  template: sphinx/requirements.txt.j2
+- path: Makefile
+  mode: full
+  template: sphinx/Makefile.j2
+- path: README.md
+  mode: full
+  template: sphinx/README.md.j2
+- path: scripts/kill-local-http-server
+  mode: full
+  template: common/kill-local-http-server.j2
+- path: docs/conf.py
+  mode: block
+  template: sphinx/conf.py.j2
+  name: sphinx-myst-course
+- path: AGENTS.md
+  mode: block
+  template: common/AGENTS.md.j2
+  name: global-agent-policy
+- path: .codex/skills/split-chapter-pages/SKILL.md
+  mode: full
+  template: common/codex/skills/split-chapter-pages/SKILL.md.j2
+- path: .codex/skills/split-chapter-pages/scripts/split_chapter_pages.py
+  mode: full
+  template: common/codex/skills/split-chapter-pages/scripts/split_chapter_pages.py.j2
+- path: .codex/skills/split-chapter-pages/agents/openai.yaml
+  mode: full
+  template: common/codex/skills/split-chapter-pages/agents/openai.yaml.j2
+variables:
+  site_name: Course Notes
+  author: Course Staff
+  description: Static Sphinx/MyST notes with browser-side examples
+  example_js_files:
+  - js/examples/demo-plot.js
+  - js/examples/python-demo.js
+state:
+  .gitignore:
+    mode: full
+    template: common/gitignore.j2
+    version: 0.1.0
+    sha256: 328fef67ad7d7a7db3c74f2ff07ca3e935cb92def0fe321609ce8d409476d84b
+  .readthedocs.yaml:
+    mode: full
+    template: sphinx/readthedocs.yaml.j2
+    version: 0.1.0
+    sha256: 1a71dc18cf018bedae9efd69ed97bacbed246bfc9f6979b39d6eccbf0b5939d8
+  requirements.txt:
+    mode: full
+    template: sphinx/requirements.txt.j2
+    version: 0.1.0
+    sha256: 5498353152d9ada74331534082e454e878de0bbe6fadccd63b9b01997cdefddc
+  Makefile:
+    mode: full
+    template: sphinx/Makefile.j2
+    version: 0.1.0
+    sha256: 0d6dab9068e7227ef670f2ef59fb1174aafa96f4c7b2889e50395ab996d3b6b1
+  README.md:
+    mode: full
+    template: sphinx/README.md.j2
+    version: 0.1.0
+    sha256: 654f012d4f14d76fc8972a45e814035cec640c8f2f597472773208aa77236825
+  scripts/kill-local-http-server:
+    mode: full
+    template: common/kill-local-http-server.j2
+    version: 0.1.0
+    sha256: e9224da1183d655b767bf0a2c0aed8df1f8fd4338524986dc093376a77676be3
+  docs/conf.py:
+    mode: block
+    template: sphinx/conf.py.j2
+    version: 0.1.0
+    sha256: 901251dd1373e92f5ab26254fbe7ec75f925911d1d809181faea7bd81893c162
+  AGENTS.md:
+    mode: block
+    template: common/AGENTS.md.j2
+    version: 0.1.0
+    sha256: 6849da773df80e56facc74b96c8e4eab45f6161616d56b1bc1c6e505e4f0c3ea
+  .codex/skills/split-chapter-pages/SKILL.md:
+    mode: full
+    template: common/codex/skills/split-chapter-pages/SKILL.md.j2
+    version: 0.1.0
+    sha256: 5857f6dbb38568a279951f3d8b0ce2a282e367529dc9a43f48342a11573f12d5
+  .codex/skills/split-chapter-pages/scripts/split_chapter_pages.py:
+    mode: full
+    template: common/codex/skills/split-chapter-pages/scripts/split_chapter_pages.py.j2
+    version: 0.1.0
+    sha256: 0a247f8ed2cf37eb9dd339d25779f5e4703dbb5f83a86c798b55eb08701dcd0e
+  .codex/skills/split-chapter-pages/agents/openai.yaml:
+    mode: full
+    template: common/codex/skills/split-chapter-pages/agents/openai.yaml.j2
+    version: 0.1.0
+    sha256: 11aca33e29c8a66447102439ac0ad1b2e566ae80ce0022ddde0a9c031a33f27d

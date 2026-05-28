@@ -1,5 +1,8 @@
 {
   // "workbench.editorAssociations": {
   //   "*.md": "vscode.markdown.preview.editor"
-  // }
+  // },
+  "workbench.colorCustomizations": {
+    "terminal.background": "#586503"
+  }
 }
